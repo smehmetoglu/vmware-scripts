@@ -130,8 +130,25 @@ if($updateUserPref) {
     My-Logger "Updating NSX User Preferences ..."
     $requests = Invoke-WebRequest -Uri "https://${NSX_FQDN}/api/v1/user-preferences" -Method GET -Headers $headers -SkipCertificateCheck
     if($requests.StatusCode -eq 200) {
-        $spec = $requests.Content | ConvertFrom-Json
-        $spec.other_preferences[1].value = $false
+        # Ensure property exists
+        if (-not ($spec.PSObject.Properties.Name -contains 'other_preferences')) {
+            $spec | Add-Member -MemberType NoteProperty -Name "other_preferences" -Value @()
+        }
+
+        # Look for existing key
+        $pref = $spec.other_preferences | Where-Object { $_.key -eq "hideVcfBanner" }
+
+        if ($null -eq $pref) {
+            # Add new entry
+            $spec.other_preferences += [pscustomobject]@{
+                key   = "hideVcfBanner"
+                value = $true
+            }
+        } else {
+            # Update existing entry
+            $pref.value = $true
+        }
+
         $body = $spec | ConvertTo-Json
         $requests = Invoke-WebRequest -Uri "https://${NSX_FQDN}/api/v1/user-preferences" -Method PUT -Headers $headers -Body $body -SkipCertificateCheck
     }
