@@ -133,11 +133,6 @@ $payload = [ordered]@{
         useExistingDeployment = $false
     }
     vcfManagementComponentsInfrastructureSpec = [ordered]@{
-        localRegionNetwork = [ordered]@{
-            networkName = $VCFManagementServicesNetworkName
-            subnetMask = $VCFManagementServicesNetworkNetmask
-            gateway = $VCFManagementServicesNetworkGateway
-        }
         xRegionNetwork = [ordered]@{
             networkName = $VCFManagementServicesNetworkName
             subnetMask = $VCFManagementServicesNetworkNetmask
